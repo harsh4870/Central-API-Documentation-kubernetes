@@ -1,0 +1,35 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: swagger-ui-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    cert-manager.io/cluster-issuer: swagger-ui
+spec:
+  tls:
+  - hosts:
+    - example.io
+    secretName: swagger-ui
+  rules:
+  - host: example.io
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: swagger-ui
+          servicePort: 80
+---
+apiVersion: cert-manager.io/v1alpha2
+kind: ClusterIssuer
+metadata:
+  name: swagger-ui
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: it-support@manvar.com
+    privateKeySecretRef:
+      name: swagger-ui
+    solvers:
+    - http01:
+        ingress:
+          class: nginx

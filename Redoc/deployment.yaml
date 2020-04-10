@@ -1,0 +1,43 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: redoc-ui
+spec:
+  selector:
+    app: redoc-ui
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redoc-ui
+  labels:
+    app: redoc-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redoc-ui
+  template:
+    metadata:
+      labels:
+        app: redoc-ui
+    spec:
+      containers:
+      - name: redoc-ui
+        image: redocly/redoc #build new image for adding local swaggerfile
+        ports:
+        - containerPort: 80
+        env:
+        - name: BASE_URL
+          value: /
+        - name: SPEC_URL
+          value: >-
+            [
+            {url:'https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml',name:'Pet Store Example'},
+            {url:'https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/uspto.yaml',name:'USPTO'},
+            {url:'/example-swagger.yaml',name:'Local Example'} 
+            ]

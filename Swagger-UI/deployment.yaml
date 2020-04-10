@@ -1,0 +1,43 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: swagger-ui
+spec:
+  selector:
+    app: swagger-ui
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: swagger-ui
+  labels:
+    app: swagger-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: swagger-ui
+  template:
+    metadata:
+      labels:
+        app: swagger-ui
+    spec:
+      containers:
+      - name: swagger-ui
+        image: swaggerapi/swagger-ui #build new image for adding local swaggerfile
+        ports:
+        - containerPort: 8080
+        env:
+        - name: BASE_URL
+          value: /
+        - name: API_URLS
+          value: >-
+            [
+            {url:'https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/petstore.yaml',name:'Pet Store Example'},
+            {url:'https://raw.githubusercontent.com/OAI/OpenAPI-Specification/master/examples/v3.0/uspto.yaml',name:'USPTO'},
+            {url:'/example-swagger.yaml',name:'Local Example'} 
+            ]
